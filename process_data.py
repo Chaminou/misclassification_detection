@@ -168,7 +168,7 @@ if __name__ == '__main__' :
     #copy information to make every columns ok to use
     df = clean_columns(df)
     #save that dataframe before processing
-    save_df_pickle(df, 'df')
+    save_df_pickle(df, 'clear_data/df')
     #load dataframe, can skip it here
     df = load_df_pickle('df')
     #removing word with some flags in them
@@ -180,4 +180,4 @@ if __name__ == '__main__' :
     #lemmatize the remaining words
     df = lemmatize_words(df)
     #save the processed dataframe to an other location, ready to use in ML
-    save_df_pickle(df, 'df-ready')
+    save_df_pickle(df, 'clear_data/df-processed')
