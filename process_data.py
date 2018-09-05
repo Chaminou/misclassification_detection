@@ -6,16 +6,18 @@ import string
 import tqdm
 from nltk.stem.snowball import FrenchStemmer
 from nltk.corpus import stopwords
+import argparse
+import os
 
 
 #save dataframe with pickle
 def save_df_pickle(df, name) :
-    with open(name + '.pkl', 'wb') as f :
+    with open(name, 'wb') as f :
         pickle.dump(df, f)
 
 #load dataframe with pickle
 def load_df_pickle(name) :
-    with open(name + '.pkl', 'rb') as f :
+    with open(name, 'rb') as f :
         df = pickle.load(f)
     return df
 
@@ -42,7 +44,8 @@ def clean_columns(data) :
 def replace_chars(data) :
     print('##### REPLACE CHARS #####')
     df = data
-    replace_dico = {'&rsquo;':"'",
+    replace_dico = {'maitre':'metre',
+                    '&rsquo;':"'",
                     '&oelig;':'oe',
                     '&lsquo;':"",#les 4 suivants représente un '
                     '&ldquo':"",
@@ -163,14 +166,56 @@ def count_categories(data) :
 
 
 if __name__ == '__main__' :
+
+    parser = argparse.ArgumentParser(description='process data')
+
+    parser.add_argument('-f', dest='file', default=None,
+                       help='xlsx file you want to process')
+    parser.add_argument('-n', dest='name', default=None,
+                       help='name of the pickled output dataframe')
+
+    args = parser.parse_args()
+
+    is_file_valid = False
+    is_name_valid = False
+
+    if args.file != None :
+        if os.path.isfile("raw_data/" + args.file) :
+            print("valid file")
+            is_file_valid = True
+        else :
+            print('no file detected')
+    else :
+        print('please set an input file with -f')
+
+    if args.name != None :
+        print('pickled dataframe will be saved as ' + args.name)
+        is_name_valid = True
+    else :
+        print('please set a name with -n')
+
+    if is_file_valid and is_name_valid:
+        df = load_df_excel('raw_data/' + args.file)
+        df = clean_columns(df)
+        df = remove_words(df)
+        df = replace_chars(df)
+        df = remove_stop_words(df)
+        df = lemmatize_words(df)
+        save_df_pickle(df, 'clear_data/' + args.name)
+    else :
+        print("can't process data")
+
+
+    '''
     #load excel as pandas dataframes
-    df = load_df_excel('raw_data/training_input.xlsx')
+    df = load_df_excel('raw_data/test_input.xlsx')
+    df = df.head(1000)
     #copy information to make every columns ok to use
     df = clean_columns(df)
     #save that dataframe before processing
-    save_df_pickle(df, 'clear_data/df')
+    save_df_pickle(df, 'clear_data/dftest')
     #load dataframe, can skip it here
-    df = load_df_pickle('df')
+    df = load_df_pickle('clear_data/dftest')
     #removing word with some flags in them
     df = remove_words(df)
     #replacing some chars in words
@@ -180,4 +225,5 @@ if __name__ == '__main__' :
     #lemmatize the remaining words
     df = lemmatize_words(df)
     #save the processed dataframe to an other location, ready to use in ML
-    save_df_pickle(df, 'clear_data/df-processed')
+    save_df_pickle(df, 'clear_data/dftest-processed')
+    '''
