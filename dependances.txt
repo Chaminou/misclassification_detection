@@ -1,0 +1,13 @@
+tensorflow
+numpy
+pandas
+tflearn
+sklearn
+random
+keras
+pickle
+tqdm
+argparse
+os
+string
+nltk
